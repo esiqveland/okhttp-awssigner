@@ -1,5 +1,8 @@
 # OkHttp AWSv4 Signer interceptor
 
+  [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.esiqveland.awssigner/okhttp-awssigner-interceptor/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.esiqveland.awssigner/okhttp-awssigner-interceptor/)
+  [![Build Status](https://circleci.com/gh/esiqveland/okhttp-awssigner.svg?&style=shield)](https://circleci.com/gh/esiqveland/okhttp-awssigner)
+
 ## What is it?
 
 An interceptor for the nice OkHttpClient from Square to sign requests for use with AWS services that require signatures on requests.
