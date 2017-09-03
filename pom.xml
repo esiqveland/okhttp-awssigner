@@ -9,7 +9,9 @@
 
     <version>1.0-SNAPSHOT</version>
 
-    <name>OkHttp AWSv4 signing interceptor</name>
+
+    <name>${project.groupId}:${project.artifactId}</name>
+    <description>OkHttp AWSv4 signing interceptor</description>
     <url>https://github.com/esiqveland/okhttp-awssigner</url>
 
     <scm>
@@ -220,4 +222,26 @@
         </profile>
     </profiles>
 
+    <distributionManagement>
+        <snapshotRepository>
+            <id>sonatype-nexus-snapshots</id>
+            <name>Sonatype Nexus Snapshots</name>
+            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+        </snapshotRepository>
+        <repository>
+            <id>sonatype-nexus-staging</id>
+            <name>Nexus Release Repository</name>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
+
+
+    <developers>
+        <developer>
+            <id>esiqveland</id>
+            <name>Eivind Siqveland</name>
+            <email>eivind@siqve.land</email>
+            <url>https://github.com/esiqveland</url>
+        </developer>
+    </developers>
 </project>
