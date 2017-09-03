@@ -18,6 +18,15 @@ My goal is to reduce the number of dependencies, so as to make it very easy to i
 Interceptor should be included late in the interceptor chain, so that all headers (including `Host`) has been set by OkHttp,
 before signing is invoked.
 
+```xml
+<dependency>
+    <groupId>com.github.esiqveland.awssigner</groupId>
+    <artifactId>okhttp-awssigner-interceptor</artifactId>
+    <version>0.1</version>
+</dependency>
+```
+
+
 ```java
 
 String accessKey = "AKIDEXAMPLE";
