@@ -7,12 +7,21 @@
     <artifactId>okhttp-awssigner-interceptor</artifactId>
     <packaging>jar</packaging>
 
-    <version>1.0-SNAPSHOT</version>
+    <version>0.1</version>
 
 
     <name>${project.groupId}:${project.artifactId}</name>
     <description>OkHttp AWSv4 signing interceptor</description>
     <url>https://github.com/esiqveland/okhttp-awssigner</url>
+
+    <developers>
+        <developer>
+            <id>esiqveland</id>
+            <name>Eivind Siqveland</name>
+            <email>eivind@siqve.land</email>
+            <url>https://github.com/esiqveland</url>
+        </developer>
+    </developers>
 
     <scm>
         <url>https://github.com/esiqveland/okhttp-awssigner</url>
@@ -114,6 +123,18 @@
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <version>1.6.8</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <serverId>ossrh-staging</serverId>
+                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                </configuration>
+            </plugin>
+
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.6.2</version>
@@ -224,24 +245,15 @@
 
     <distributionManagement>
         <snapshotRepository>
-            <id>sonatype-nexus-snapshots</id>
+            <id>ossrh-snapshots</id>
             <name>Sonatype Nexus Snapshots</name>
             <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
         </snapshotRepository>
         <repository>
-            <id>sonatype-nexus-staging</id>
+            <id>ossrh-staging</id>
             <name>Nexus Release Repository</name>
             <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
         </repository>
     </distributionManagement>
 
-
-    <developers>
-        <developer>
-            <id>esiqveland</id>
-            <name>Eivind Siqveland</name>
-            <email>eivind@siqve.land</email>
-            <url>https://github.com/esiqveland</url>
-        </developer>
-    </developers>
 </project>
