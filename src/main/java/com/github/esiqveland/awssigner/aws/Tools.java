@@ -36,10 +36,6 @@ import static com.google.common.io.BaseEncoding.base16;
 
 public class Tools {
 
-    public static boolean not(boolean value) {
-        return !value;
-    }
-
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyyMMdd")
             .withZone(ZoneId.of("GMT"));
 

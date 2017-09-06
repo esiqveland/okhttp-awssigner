@@ -1,12 +1,12 @@
 /**
  * Copyright 2017 Eivind Larsen.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,6 +18,7 @@ package com.github.esiqveland.awssigner;
 
 import com.github.esiqveland.awssigner.aws.JCloudTools;
 import com.github.esiqveland.awssigner.aws.Tools;
+import com.github.esiqveland.awssigner.aws.Utils;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
@@ -32,7 +33,6 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import okio.Buffer;
-import org.apache.commons.lang3.StringUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -43,7 +43,7 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 import static com.github.esiqveland.awssigner.aws.JCloudTools.hash;
-import static com.github.esiqveland.awssigner.aws.Tools.not;
+import static com.github.esiqveland.awssigner.aws.Utils.not;
 import static com.google.common.io.BaseEncoding.base16;
 
 public class AwsSigningInterceptor implements Interceptor {
@@ -151,7 +151,7 @@ public class AwsSigningInterceptor implements Interceptor {
         }
 
         HttpUrl url = request.url();
-        String canonicalPath = StringUtils.defaultIfBlank(
+        String canonicalPath = Utils.defaultIfBlank(
                 url.encodedPath(),
                 "/"
         );
@@ -162,7 +162,7 @@ public class AwsSigningInterceptor implements Interceptor {
             if (not(signingHeaders.contains(header))) {
                 continue;
             }
-            signedHeadersBuilder.put(StringUtils.lowerCase(header), StringUtils.trim(headers.get(header)));
+            signedHeadersBuilder.put(Utils.lowerCase(header), Utils.trim(headers.get(header)));
         }
         String amzTimestamp = timestampFormat.format(timestamp);
         signedHeadersBuilder.put("x-amz-date", amzTimestamp);
