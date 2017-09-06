@@ -2,13 +2,21 @@ package com.github.esiqveland.awssigner;
 
 import com.github.esiqveland.awssigner.aws.Tools;
 import okhttp3.Interceptor;
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
+import okio.Buffer;
+import okio.BufferedSink;
+import org.bouncycastle.ocsp.Req;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
+import java.io.InputStream;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.function.Supplier;
@@ -58,7 +66,70 @@ public class AwsSigningInterceptorTest {
         assertThat(stringToSign).isEqualTo(expected);
     }
 
+    /**
+     * file-name.req—the web request to be signed.
+     * file-name.creq—the resulting canonical request.
+     * file-name.sts—the resulting string to sign.
+     * file-name.authz—the Authorization header.
+     * file-name.sreq— the signed request.
+     */
+
     @Test
+    public void testPost() throws IOException {
+        String accessKey = "AKIDEXAMPLE";
+        String secretKey = "wJalrXUtnFEMI/K7MDENG+bPxRfiCYEXAMPLEKEY";
+        String regionName = "us-east-1";
+        String serviceName = "service";
+
+        cfg = new AwsConfiguration(
+                accessKey,
+                secretKey,
+                regionName,
+                serviceName
+        );
+
+        String expected = readResource("/testdata/aws-sigv4/post-vanilla/post-vanilla.authz");
+        ZonedDateTime aDate = ZonedDateTime.parse("2015-08-30T12:36:00.000Z", DateTimeFormatter.ISO_DATE_TIME);
+        Supplier<ZonedDateTime> clock = () -> aDate;
+        AwsSigningInterceptor interceptor = new AwsSigningInterceptor(
+                cfg,
+                clock
+        );
+
+        Request req = new Request.Builder()
+                .post(RequestBody.create(null, new byte[0]))
+                .url("http://example.amazonaws.com")
+                .addHeader("Host", "example.amazonaws.com")
+                .build();
+
+        byte[] signatureKey = Tools.getSignatureKey(
+                cfg.awsSecretKey,
+                aDate,
+                cfg.awsRegion,
+                cfg.awsServiceName
+        );
+
+        String authHeader = interceptor.makeAWSAuthorizationHeader(
+                aDate,
+                req,
+                signatureKey
+        );
+
+        assertThat(authHeader).isEqualTo(expected);
+    }
+
+
+    private static String readResource(String filename) {
+        InputStream stream = AwsSigningInterceptorTest.class.getResourceAsStream(filename);
+        try {
+            return new Buffer().readFrom(stream).readUtf8();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    @Ignore
     // TODO: finish this test
     public void testWithClient() {
         String accessKey = "AKIDEXAMPLE";
