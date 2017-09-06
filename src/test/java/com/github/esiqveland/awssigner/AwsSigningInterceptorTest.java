@@ -19,7 +19,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
@@ -81,7 +83,7 @@ public class AwsSigningInterceptorTest {
         String regionName = "us-east-1";
         String serviceName = "service";
 
-        cfg = new AwsConfiguration(
+        AwsConfiguration cfg = new AwsConfiguration(
                 accessKey,
                 secretKey,
                 regionName,
@@ -118,6 +120,43 @@ public class AwsSigningInterceptorTest {
         assertThat(authHeader).isEqualTo(expected);
     }
 
+    @Test
+    public void testRequestParser() {
+        String expected = readResource("/testdata/aws-sigv4/post-vanilla/post-vanilla.authz");
+
+        Request req = parseRequest(readResource("/testdata/aws-sigv4/post-vanilla/post-vanilla.req")).build();
+
+
+    }
+
+    private static Request.Builder parseRequest(String reqFile) {
+        String[] split = reqFile.split("\n");
+
+        // TODO: this breaks if there is a whitespace in url
+        // Example: "POST /new HTTP/1.1"
+        String[] spec = split[0].split("\\w");
+        String method = spec[0];
+        String path = spec[1];
+        String httpV = spec[2];
+        Request.Builder builder = new Request.Builder()
+                .method(method, null);
+
+        String host = "";
+        for (int i = 1; i < split.length; i++) {
+            String[] header = split[i].split(":");
+            builder.addHeader(header[0], header[1]);
+
+            if ("Host".equals(header[0])) {
+                host = header[1];
+            }
+        }
+
+        String url = String.format("http://%s%s", host, path);
+        builder.url(url);
+
+        // TODO: how to parse a body?
+        return builder;
+    }
 
     private static String readResource(String filename) {
         InputStream stream = AwsSigningInterceptorTest.class.getResourceAsStream(filename);

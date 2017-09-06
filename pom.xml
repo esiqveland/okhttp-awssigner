@@ -42,6 +42,9 @@
 
         <okhttp.version>3.8.1</okhttp.version>
         <slf4j.version>1.7.25</slf4j.version>
+
+        <junit.jupiter.version>5.0.0-RC3</junit.jupiter.version>
+        <junit.platform.version>1.0.0-RC3</junit.platform.version>
     </properties>
 
     <licenses>
@@ -82,6 +85,11 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>io.vavr</groupId>
+            <artifactId>vavr</artifactId>
+            <version>0.9.0</version>
+        </dependency>
+        <dependency>
             <groupId>com.squareup.okhttp3</groupId>
             <artifactId>logging-interceptor</artifactId>
             <version>${okhttp.version}</version>
@@ -112,6 +120,23 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.12</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>${junit.jupiter.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-runner</artifactId>
+            <version>${junit.platform.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.vintage</groupId>
+            <artifactId>junit-vintage-engine</artifactId>
+            <version>4.12.0-RC3</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
