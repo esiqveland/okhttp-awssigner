@@ -56,6 +56,12 @@ OkHttpClient client = new OkHttpClient.Builder()
 
 ```
 
+## TODO
+ - [X] remove commons-lang dependency
+ - [ ] add more tests from the examples of signing requests
+   - [ ] table-driven tests for the example requests test suite?
+ - [ ] provide some form of debug logging?
+
 ## Credits
 
 The official AWSv4 signature documentation.
