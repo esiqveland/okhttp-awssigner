@@ -9,6 +9,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okio.Buffer;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
@@ -81,7 +82,6 @@ public class RequestSuiteTest {
             "get-vanilla-query-order-key-case",
             "get-vanilla-query-unreserved",
             "get-vanilla-empty-query-key",
-            "normalize-path-get-relative",
             "post-header-key-case",
             "post-header-key-sort",
             "post-header-value-case",
@@ -91,6 +91,26 @@ public class RequestSuiteTest {
             "post-x-www-form-urlencoded-parameters",
             "post-vanilla-empty-query-value"
     );
+
+    // tests around normalization of relative paths
+    private final ImmutableList<String> normalizeTests = ImmutableList.of(
+            //TODO: make this work
+            //"get-slash",
+            //"get-slashes",
+            //TODO: this does not parse correctly
+            //"get-space",
+            "get-relative",
+            "get-slash-dot-slash",
+            "get-relative-relative",
+            "get-slash-pointless-dot"
+    );
+
+    @TestFactory
+    @Ignore
+    public Stream<DynamicTest> testRequestURLNormalization() {
+        return normalizeTests.stream()
+                .map(dataSet -> DynamicTest.dynamicTest(dataSet, () -> runTest("normalize-path", dataSet)));
+    }
 
     @TestFactory
     public Stream<DynamicTest> testRequests() {
