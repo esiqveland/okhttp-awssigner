@@ -32,9 +32,9 @@ public class Utils {
 
     /**
      * removeContiguousBlanks replaces contiguous regions of whitespace with a single space.
-     * ex: "a    b     c " -> "a b c "
-     * @param str
-     * @return
+     * Example: "a    b     c " → "a b c "
+     * @param str the string to strip
+     * @return str with spaces strip
      */
     public static String removeContiguousBlanks(String str) {
         return str == null ? null : noSpace.matcher(str).replaceAll(" ");

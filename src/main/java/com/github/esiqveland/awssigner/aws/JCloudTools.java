@@ -35,11 +35,11 @@ public class JCloudTools {
     /**
      * hash input with sha256
      *
-     * @param input
+     * @param is a stream of bytes to hash
      * @return hash result
      */
-    public static byte[] hash(InputStream input) {
-        HashingInputStream his = new HashingInputStream(Hashing.sha256(), input);
+    public static byte[] hash(InputStream is) {
+        HashingInputStream his = new HashingInputStream(Hashing.sha256(), is);
         try {
             ByteStreams.copy(his, ByteStreams.nullOutputStream());
             return his.hash().asBytes();
@@ -51,6 +51,7 @@ public class JCloudTools {
 
     /**
      * The hash returns the following value: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+     * @return hash of the empty payload
      */
     public static String getEmptyPayloadContentHash() {
         return base16().lowerCase().encode(hash(new ByteArrayInputStream(new byte[0])));
