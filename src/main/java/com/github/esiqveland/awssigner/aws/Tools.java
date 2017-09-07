@@ -21,6 +21,10 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.Maps;
 import com.google.common.escape.Escaper;
 import com.google.common.net.PercentEscaper;
+import io.vavr.Tuple;
+import io.vavr.Tuple2;
+import io.vavr.collection.Stream;
+import io.vavr.collection.TreeMultimap;
 import okhttp3.HttpUrl;
 
 import javax.crypto.Mac;
@@ -30,9 +34,12 @@ import java.security.NoSuchAlgorithmException;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.TreeMap;
+import java.util.stream.IntStream;
 
 import static com.google.common.io.BaseEncoding.base16;
+import static java.util.stream.Collectors.toList;
 
 public class Tools {
 
@@ -84,11 +91,11 @@ public class Tools {
 
     /**
      * Do not URI-encode any of the unreserved characters that RFC 3986 defines:
-     *     A-Z, a-z, 0-9, hyphen ( - ), underscore ( _ ), period ( . ), and tilde ( ~ ).
-     *
+     * A-Z, a-z, 0-9, hyphen ( - ), underscore ( _ ), period ( . ), and tilde ( ~ ).
+     * <p>
      * Percent-encode all other characters with %XY, where X and Y are hexadecimal characters (0-9 and uppercase A-F).
      * For example, the space character must be encoded as %20 (not using '+', as some encoding schemes do) and extended UTF-8 characters must be in the form %XY%ZA%BC.
-     *
+     * <p>
      * See: https://docs.aws.amazon.com/general/latest/gr/sigv4-create-canonical-request.html
      */
     private static final Escaper URL_ENCODER = new PercentEscaper("-_.~", false);
@@ -99,11 +106,19 @@ public class Tools {
             return "";
         }
 
-        TreeMap<String, String> map = Maps.newTreeMap();
-        for (int i = 0; i < querySize; i++) {
-            map.put(URL_ENCODER.escape(url.queryParameterName(i)), URL_ENCODER.escape(url.queryParameterValue(i)));
-        }
+        List<Tuple2<String, String>> tuples = IntStream.range(0, querySize)
+                .mapToObj(i -> Tuple.of(
+                        URL_ENCODER.escape(url.queryParameterName(i)),
+                        URL_ENCODER.escape(url.queryParameterValue(i))
+                ))
+                .collect(toList());
 
-        return Joiner.on("&").withKeyValueSeparator("=").join(map);
+        TreeMultimap.Builder<String> builder = TreeMultimap.withSortedSet();
+        String sortedQuery = builder.ofEntries(tuples)
+                .toStream()
+                .map(entry -> String.format("%s=%s", entry._1, entry._2))
+                .mkString("&");
+
+        return sortedQuery;
     }
 }

@@ -2,6 +2,8 @@ package com.github.esiqveland.awssigner;
 
 import com.github.esiqveland.awssigner.aws.Tools;
 import com.github.esiqveland.awssigner.aws.Utils;
+import com.google.common.base.Charsets;
+import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -15,6 +17,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -63,7 +66,8 @@ public class RequestSuiteTest {
      * file-name.authz—the Authorization header.
      * file-name.sreq— the signed request.
      */
-    private final ImmutableList<String> testData = ImmutableList.of(
+    private final ImmutableList<String> normalTests = ImmutableList.of(
+            "get-vanilla-query-order-key",
             //"get-header-key-duplicate",
             // TODO: this test does not parse
             //"get-header-value-multiline",
@@ -73,8 +77,7 @@ public class RequestSuiteTest {
             "get-utf8",
             "get-vanilla",
             "get-vanilla-query",
-            //"get-vanilla-query-order-key",
-            //"get-vanilla-query-order-value",
+            "get-vanilla-query-order-value",
             "get-vanilla-query-order-key-case",
             "get-vanilla-query-unreserved",
             "get-vanilla-empty-query-key",
@@ -84,15 +87,14 @@ public class RequestSuiteTest {
             "post-header-value-case",
             "post-vanilla",
             "post-vanilla-query",
-            // TODO: these does not parse properly
-            //"post-x-www-form-urlencoded",
-            //"post-x-www-form-urlencoded-parameters",
+            "post-x-www-form-urlencoded",
+            "post-x-www-form-urlencoded-parameters",
             "post-vanilla-empty-query-value"
     );
 
     @TestFactory
-    public Stream<DynamicTest> testAllSets() {
-        return testData.stream()
+    public Stream<DynamicTest> testRequests() {
+        return normalTests.stream()
                 .map(dataSet -> DynamicTest.dynamicTest(dataSet, () -> runTest("./", dataSet)));
     }
 
@@ -146,7 +148,6 @@ public class RequestSuiteTest {
         assertThat(awsHeader).isEqualTo(expected);
     }
 
-    // TODO: how to parse a body?
     private static Request.Builder parseRequest(String reqFile) {
         String[] split = reqFile.split("\n");
 
@@ -165,8 +166,8 @@ public class RequestSuiteTest {
         String aBody = null;
         for (int i = 1; i < split.length; i++) {
             if (Utils.isBlank(split[i])) {
-                // TODO: join together body to the end of split[]
-                aBody = split[i + 1];
+                String[] bodyStrings = Arrays.copyOfRange(split, i + 1, split.length);
+                aBody = Joiner.on("\n").join(bodyStrings);
                 break;
             }
             String[] header = split[i].split(":");
@@ -175,6 +176,9 @@ public class RequestSuiteTest {
             if ("Host".equals(header[0])) {
                 host = header[1];
             }
+        }
+        if (aBody != null) {
+            builder.method(method, RequestBody.create(null, aBody.getBytes(Charsets.UTF_8)));
         }
 
         String url = String.format("http://%s%s", host, path);
