@@ -1,5 +1,7 @@
 package com.github.esiqveland.awssigner.aws;
 
+import java.util.regex.Pattern;
+
 public class Utils {
     public static boolean not(boolean value) {
         return !value;
@@ -24,6 +26,18 @@ public class Utils {
         } else {
             return s;
         }
+    }
+
+    private static Pattern noSpace = Pattern.compile("\\s+");
+
+    /**
+     * removeContiguousBlanks replaces contiguous regions of whitespace with a single space.
+     * ex: "a    b     c " -> "a b c "
+     * @param str
+     * @return
+     */
+    public static String removeContiguousBlanks(String str) {
+        return str == null ? null : noSpace.matcher(str).replaceAll(" ");
     }
 
     public static String trim(final String str) {

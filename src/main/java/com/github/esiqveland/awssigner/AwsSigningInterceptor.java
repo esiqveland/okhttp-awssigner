@@ -25,7 +25,9 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSortedMap;
+import com.google.common.collect.Lists;
 import com.google.common.net.HttpHeaders;
+import io.vavr.Tuple;
 import okhttp3.Headers;
 import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
@@ -39,12 +41,15 @@ import java.io.IOException;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
 import static com.github.esiqveland.awssigner.aws.JCloudTools.hash;
 import static com.github.esiqveland.awssigner.aws.Utils.not;
 import static com.google.common.io.BaseEncoding.base16;
+import static java.util.stream.Collectors.joining;
 
 public class AwsSigningInterceptor implements Interceptor {
     private static final String AMZ_ALGORITHM_HMAC_SHA256 = "AWS4-HMAC-SHA256";
@@ -92,7 +97,7 @@ public class AwsSigningInterceptor implements Interceptor {
                 request
         );
 
-        ImmutableMap<String, String> signedHeaders = canonicalRequest.signedHeaders;
+        Map<String, List<String>> signedHeaders = canonicalRequest.signedHeaders;
         String requestHash = hexHash(canonicalRequest.canonicalRequest);
         String stringToSign = createStringToSign(timestamp, requestHash);
         String signature = Tools.createSignature(signatureKey, stringToSign);
@@ -125,9 +130,9 @@ public class AwsSigningInterceptor implements Interceptor {
     private static class CanonicalRequest {
         final String canonicalRequest;
         // signedHeaders includes a copy of the headers we chose to include for the signature
-        final ImmutableMap<String, String> signedHeaders;
+        final Map<String, List<String>> signedHeaders;
 
-        CanonicalRequest(String canonicalRequest, ImmutableMap<String, String> signedHeaders) {
+        CanonicalRequest(String canonicalRequest, Map<String, List<String>> signedHeaders) {
             this.canonicalRequest = canonicalRequest;
             this.signedHeaders = signedHeaders;
         }
@@ -148,25 +153,16 @@ public class AwsSigningInterceptor implements Interceptor {
                 "/"
         );
 
-        ImmutableMap.Builder<String, String> signedHeadersBuilder = ImmutableSortedMap.naturalOrder();
-        Headers headers = request.headers();
-        for (String header : headers.names()) {
-            if ("x-amz-date".equalsIgnoreCase(header)) {
-                continue;
-            }
-            signedHeadersBuilder.put(Utils.lowerCase(header), Utils.trim(headers.get(header)));
-        }
+        Map<String, List<String>> signedHeaders = request.headers().toMultimap();
+
+        // replace x-amz-date with one we know is same as the timestamp we have signed in the signature
         String amzTimestamp = timestampFormat.format(timestamp);
-        signedHeadersBuilder.put("x-amz-date", amzTimestamp);
+        signedHeaders.remove("x-amz-date");
+        signedHeaders.put("x-amz-date", Lists.newArrayList(amzTimestamp));
+
+        String canonicalHeaders = Tools.createCanonicalHeaderString(signedHeaders);
 
         String canonicalQueryString = Tools.createCanonicalQueryString(request.url());
-
-        StringBuilder headersBuilder = new StringBuilder();
-        ImmutableMap<String, String> signedHeaders = signedHeadersBuilder.build();
-        for (Map.Entry<String, String> entry : signedHeaders.entrySet()) {
-            headersBuilder.append(entry.getKey()).append(':').append(entry.getValue()).append('\n');
-        }
-        String canonicalHeaders = headersBuilder.toString();
 
         String signedHead = Joiner.on(";").join(signedHeaders.keySet().iterator());
 
@@ -181,7 +177,7 @@ public class AwsSigningInterceptor implements Interceptor {
         String canonicalRequest = request.method() + '\n' +
                 canonicalPath + '\n' +
                 canonicalQueryString + '\n' +
-                canonicalHeaders + '\n' +
+                canonicalHeaders + '\n' + '\n' +
                 signedHead + '\n' +
                 bodyHash;
 

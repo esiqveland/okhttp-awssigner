@@ -69,11 +69,11 @@ public class RequestSuiteTest {
      */
     private final ImmutableList<String> normalTests = ImmutableList.of(
             "get-vanilla-query-order-key",
-            //"get-header-key-duplicate",
+            "get-header-key-duplicate",
             // TODO: this test does not parse
             //"get-header-value-multiline",
-            //"get-header-value-order",
-            //"get-header-value-trim",
+            "get-header-value-order",
+            "get-header-value-trim",
             "get-unreserved",
             "get-utf8",
             "get-vanilla",
@@ -94,10 +94,10 @@ public class RequestSuiteTest {
 
     // tests around normalization of relative paths
     private final ImmutableList<String> normalizeTests = ImmutableList.of(
-            //TODO: make this work
+            //TODO: make this work correctly
             //"get-slash",
             //"get-slashes",
-            //TODO: this does not parse correctly
+            //TODO: this request data does not parse
             //"get-space",
             "get-relative",
             "get-slash-dot-slash",

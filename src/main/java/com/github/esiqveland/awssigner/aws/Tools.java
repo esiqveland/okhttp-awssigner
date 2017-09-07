@@ -34,11 +34,14 @@ import java.security.NoSuchAlgorithmException;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.IntStream;
 
 import static com.google.common.io.BaseEncoding.base16;
+import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 
 public class Tools {
@@ -106,19 +109,34 @@ public class Tools {
             return "";
         }
 
-        List<Tuple2<String, String>> tuples = IntStream.range(0, querySize)
-                .mapToObj(i -> Tuple.of(
-                        URL_ENCODER.escape(url.queryParameterName(i)),
-                        URL_ENCODER.escape(url.queryParameterValue(i))
-                ))
-                .collect(toList());
-
-        TreeMultimap.Builder<String> builder = TreeMultimap.withSortedSet();
-        String sortedQuery = builder.ofEntries(tuples)
-                .toStream()
-                .map(entry -> String.format("%s=%s", entry._1, entry._2))
-                .mkString("&");
-
-        return sortedQuery;
+        return url.queryParameterNames().stream()
+                .flatMap(key -> url.queryParameterValues(key).stream()
+                        .map(value -> Tuple.of(
+                                URL_ENCODER.escape(key),
+                                URL_ENCODER.escape(value)
+                        )))
+                .sorted(Comparator.naturalOrder())
+                .map(keyVal -> keyVal.apply(
+                        (key, val) -> String.format("%s=%s", key, val))
+                )
+                .collect(joining("&"));
     }
+
+    public static String createCanonicalHeaderString(Map<String, List<String>> headersMap) {
+        return headersMap.entrySet().stream()
+                .map(entry -> Tuple.of(
+                        Utils.lowerCase(entry.getKey()),
+                        entry.getValue()
+                ))
+                .map(tuple -> tuple.map2(valueList -> valueList.stream()
+                        .map(Utils::trim)
+                        .map(Utils::removeContiguousBlanks)
+                        .collect(joining(","))
+                ))
+                .map(tuple -> tuple.apply(
+                        (header, values) -> String.format("%s:%s", header, values)
+                ))
+                .collect(joining("\n"));
+    }
+
 }
