@@ -146,6 +146,7 @@ public class RequestSuiteTest {
         assertThat(awsHeader).isEqualTo(expected);
     }
 
+    // TODO: how to parse a body?
     private static Request.Builder parseRequest(String reqFile) {
         String[] split = reqFile.split("\n");
 
@@ -164,7 +165,8 @@ public class RequestSuiteTest {
         String aBody = null;
         for (int i = 1; i < split.length; i++) {
             if (Utils.isBlank(split[i])) {
-                aBody = split[i + 1]; //TODO: join together body to the end of split[]
+                // TODO: join together body to the end of split[]
+                aBody = split[i + 1];
                 break;
             }
             String[] header = split[i].split(":");
@@ -178,7 +180,6 @@ public class RequestSuiteTest {
         String url = String.format("http://%s%s", host, path);
         builder.url(url);
 
-        // TODO: how to parse a body?
         return builder;
     }
 
