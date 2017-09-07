@@ -58,8 +58,11 @@ OkHttpClient client = new OkHttpClient.Builder()
 
 ## TODO
  - [X] remove commons-lang dependency
- - [ ] add more tests from the examples of signing requests
-   - [ ] table-driven tests for the example requests test suite?
+ - [X] add more tests from the examples of signing requests
+    - [ ] support duplicate header keys: `get-header-key-duplicate`
+    - [ ] multiline-header value: `get-header-value-multiline`
+    - [ ] no header value trim: `get-header-value-trim`
+    - [ ] url with spaces: `get-space`
  - [ ] provide some form of debug logging?
 
 ## Credits
