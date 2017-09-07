@@ -133,14 +133,6 @@ public class AwsSigningInterceptor implements Interceptor {
         }
     }
 
-    // signingHeaders are headers we are required to include in the signing
-    private final ImmutableSet<String> signingHeaders = ImmutableSet.of(
-            HttpHeaders.CONTENT_TYPE,
-            HttpHeaders.USER_AGENT,
-            HttpHeaders.CONTENT_LENGTH,
-            HttpHeaders.HOST
-    );
-
     private CanonicalRequest makeCanonicalRequest(ZonedDateTime timestamp, Request request) throws IOException {
         RequestBody body = request.body();
         String bodyHash = JCloudTools.getEmptyPayloadContentHash();
@@ -159,7 +151,7 @@ public class AwsSigningInterceptor implements Interceptor {
         ImmutableMap.Builder<String, String> signedHeadersBuilder = ImmutableSortedMap.naturalOrder();
         Headers headers = request.headers();
         for (String header : headers.names()) {
-            if (not(signingHeaders.contains(header))) {
+            if ("x-amz-date".equalsIgnoreCase(header)) {
                 continue;
             }
             signedHeadersBuilder.put(Utils.lowerCase(header), Utils.trim(headers.get(header)));

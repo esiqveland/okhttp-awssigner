@@ -1,8 +1,8 @@
 package com.github.esiqveland.awssigner;
 
 import com.github.esiqveland.awssigner.aws.Tools;
+import com.github.esiqveland.awssigner.aws.Utils;
 import com.google.common.collect.ImmutableList;
-import io.vavr.control.Try;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okio.Buffer;
@@ -15,14 +15,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class RequestTestSuite {
+public class RequestSuiteTest {
 
     private AwsConfiguration cfg;
     private ZonedDateTime aDate = ZonedDateTime.parse("2015-08-30T12:36:00.000Z", DateTimeFormatter.ISO_DATE_TIME);
@@ -58,28 +56,51 @@ public class RequestTestSuite {
 
     }
 
+    /**
+     * file-name.req—the web request to be signed.
+     * file-name.creq—the resulting canonical request.
+     * file-name.sts—the resulting string to sign.
+     * file-name.authz—the Authorization header.
+     * file-name.sreq— the signed request.
+     */
     private final ImmutableList<String> testData = ImmutableList.of(
-            "post-vanilla",
-            "get-vanilla",
-            "get-vanilla-query",
-            "get-vanilla-query-order-key-case",
-            "get-vanilla-query-unreserved",
+            //"get-header-key-duplicate",
+            // TODO: this test does not parse
+            //"get-header-value-multiline",
+            //"get-header-value-order",
+            //"get-header-value-trim",
             "get-unreserved",
             "get-utf8",
-            "post-vanilla-query"
+            "get-vanilla",
+            "get-vanilla-query",
+            //"get-vanilla-query-order-key",
+            //"get-vanilla-query-order-value",
+            "get-vanilla-query-order-key-case",
+            "get-vanilla-query-unreserved",
+            "get-vanilla-empty-query-key",
+            "normalize-path-get-relative",
+            "post-header-key-case",
+            "post-header-key-sort",
+            "post-header-value-case",
+            "post-vanilla",
+            "post-vanilla-query",
+            // TODO: these does not parse properly
+            //"post-x-www-form-urlencoded",
+            //"post-x-www-form-urlencoded-parameters",
+            "post-vanilla-empty-query-value"
     );
 
     @TestFactory
     public Stream<DynamicTest> testAllSets() {
         return testData.stream()
-                .map(dataSet -> DynamicTest.dynamicTest(dataSet, () -> runTest(dataSet)));
+                .map(dataSet -> DynamicTest.dynamicTest(dataSet, () -> runTest("./", dataSet)));
     }
 
-    private void runTest(String dataset) throws IOException {
-        String authzFile = String.format("/testdata/aws-sigv4/%s/%s.authz", dataset, dataset);
+    private void runTest(String folder, String dataset) throws IOException {
+        String authzFile = String.format("/testdata/aws-sigv4/%s/%s/%s.authz", folder, dataset, dataset);
         String expected = readResource(authzFile);
 
-        String requestFile = String.format("/testdata/aws-sigv4/%s/%s.req", dataset, dataset);
+        String requestFile = String.format("/testdata/aws-sigv4/%s/%s/%s.req", folder, dataset, dataset);
         Request req = parseRequest(readResource(requestFile)).build();
 
 
@@ -140,7 +161,12 @@ public class RequestTestSuite {
                 .method(method, body);
 
         String host = "";
+        String aBody = null;
         for (int i = 1; i < split.length; i++) {
+            if (Utils.isBlank(split[i])) {
+                aBody = split[i + 1]; //TODO: join together body to the end of split[]
+                break;
+            }
             String[] header = split[i].split(":");
             builder.addHeader(header[0], header[1]);
 
