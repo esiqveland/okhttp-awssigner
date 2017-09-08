@@ -24,6 +24,7 @@ import okhttp3.HttpUrl;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.Charset;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.time.ZoneId;
@@ -41,6 +42,10 @@ public class Tools {
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyyMMdd")
             .withZone(ZoneId.of("GMT"));
 
+    // mac is a holder to make sure the algorithm is present at JVM startup
+    // and doesn't fail runtime when called
+    private final Mac mac = getAlgorithmSilent(HMAC_SHA256, "anykey".getBytes(Charsets.UTF_8));
+
 
     static Mac getAlgorithmSilent(String algorithm, byte[] key) {
         try {
@@ -52,9 +57,10 @@ public class Tools {
         }
     }
 
+    final static private String HMAC_SHA256 = "HmacSHA256";
+
     static byte[] HmacSHA256(byte[] key, String data) {
-        String algorithm = "HmacSHA256";
-        Mac mac = getAlgorithmSilent(algorithm, key);
+        Mac mac = getAlgorithmSilent(HMAC_SHA256, key);
         return mac.doFinal(data.getBytes(Charsets.UTF_8));
     }
 
