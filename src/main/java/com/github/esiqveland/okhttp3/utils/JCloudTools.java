@@ -49,11 +49,18 @@ public class JCloudTools {
     }
 
 
+    private final static String EMPTY_HASH = createEmptyPayloadContentHash();
+
     /**
      * The hash returns the following value: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+     *
      * @return hash of the empty payload
      */
     public static String getEmptyPayloadContentHash() {
+        return EMPTY_HASH;
+    }
+
+    private static String createEmptyPayloadContentHash() {
         return base16().lowerCase().encode(hash(new ByteArrayInputStream(new byte[0])));
     }
 
