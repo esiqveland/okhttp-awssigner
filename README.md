@@ -24,8 +24,8 @@ before signing is invoked.
 
 ```xml
 <dependency>
-    <groupId>com.github.esiqveland.awssigner</groupId>
-    <artifactId>okhttp-awssigner-interceptor</artifactId>
+    <groupId>com.github.esiqveland.okhttp3</groupId>
+    <artifactId>aws-interceptor</artifactId>
     <version>0.9.0</version>
 </dependency>
 ```
