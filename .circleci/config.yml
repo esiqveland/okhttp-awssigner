@@ -37,8 +37,6 @@ jobs:
             - ~/.m2
           key: v1-dependencies-{{ checksum "pom.xml" }}
 
-  test:
-      # run tests!
       - run: mvn clean test jacoco:report coveralls:report
 
       - run:
