@@ -3,11 +3,11 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
                       http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.github.esiqveland.awssigner</groupId>
-    <artifactId>okhttp-awssigner-interceptor</artifactId>
+    <groupId>com.github.esiqveland.okhttp3</groupId>
+    <artifactId>aws-interceptor</artifactId>
     <packaging>jar</packaging>
 
-    <version>0.9.1-SNAPSHOT</version>
+    <version>0.9.0</version>
 
     <name>${project.groupId}:${project.artifactId}</name>
     <description>OkHttp AWSv4 signing interceptor</description>

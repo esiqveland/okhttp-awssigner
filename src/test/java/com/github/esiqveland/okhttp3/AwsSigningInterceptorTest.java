@@ -1,27 +1,18 @@
-package com.github.esiqveland.awssigner;
+package com.github.esiqveland.okhttp3;
 
-import com.github.esiqveland.awssigner.aws.Tools;
+import com.github.esiqveland.okhttp3.utils.Tools;
 import okhttp3.Interceptor;
-import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.RequestBody;
-import okio.Buffer;
-import okio.BufferedSink;
-import org.bouncycastle.ocsp.Req;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
-import javax.annotation.Nullable;
 import java.io.IOException;
-import java.io.InputStream;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.function.Supplier;
-import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;

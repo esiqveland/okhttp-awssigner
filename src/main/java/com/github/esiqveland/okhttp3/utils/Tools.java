@@ -14,17 +14,12 @@
  * limitations under the License.
  */
 
-package com.github.esiqveland.awssigner.aws;
+package com.github.esiqveland.okhttp3.utils;
 
 import com.google.common.base.Charsets;
-import com.google.common.base.Joiner;
-import com.google.common.collect.Maps;
 import com.google.common.escape.Escaper;
 import com.google.common.net.PercentEscaper;
 import io.vavr.Tuple;
-import io.vavr.Tuple2;
-import io.vavr.collection.Stream;
-import io.vavr.collection.TreeMultimap;
 import okhttp3.HttpUrl;
 
 import javax.crypto.Mac;
@@ -37,12 +32,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
-import java.util.stream.IntStream;
 
 import static com.google.common.io.BaseEncoding.base16;
 import static java.util.stream.Collectors.joining;
-import static java.util.stream.Collectors.toList;
 
 public class Tools {
 

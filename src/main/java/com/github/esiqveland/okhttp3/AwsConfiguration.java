@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.esiqveland.awssigner;
+package com.github.esiqveland.okhttp3;
 
 public class AwsConfiguration {
     public final String awsAccessKey;

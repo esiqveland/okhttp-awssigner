@@ -1,4 +1,4 @@
-package com.github.esiqveland.awssigner.aws;
+package com.github.esiqveland.okhttp3.utils;
 
 import java.util.regex.Pattern;
 

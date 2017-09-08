@@ -1,6 +1,6 @@
-package com.github.esiqveland.awssigner.aws;
+package com.github.esiqveland.okhttp3.utils;
 
-import com.github.esiqveland.awssigner.AwsConfiguration;
+import com.github.esiqveland.okhttp3.AwsConfiguration;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -10,7 +10,6 @@ import java.time.format.DateTimeFormatter;
 
 import static com.google.common.io.BaseEncoding.base16;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.*;
 
 public class ToolsTest {
     private AwsConfiguration cfg;

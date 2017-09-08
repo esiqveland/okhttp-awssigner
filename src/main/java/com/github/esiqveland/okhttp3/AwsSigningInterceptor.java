@@ -14,21 +14,15 @@
  * limitations under the License.
  */
 
-package com.github.esiqveland.awssigner;
+package com.github.esiqveland.okhttp3;
 
-import com.github.esiqveland.awssigner.aws.JCloudTools;
-import com.github.esiqveland.awssigner.aws.Tools;
-import com.github.esiqveland.awssigner.aws.Utils;
+import com.github.esiqveland.okhttp3.utils.JCloudTools;
+import com.github.esiqveland.okhttp3.utils.Tools;
+import com.github.esiqveland.okhttp3.utils.Utils;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.ImmutableSortedMap;
 import com.google.common.collect.Lists;
-import com.google.common.net.HttpHeaders;
-import io.vavr.Tuple;
-import okhttp3.Headers;
 import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
 import okhttp3.Request;
@@ -41,13 +35,11 @@ import java.io.IOException;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
-import static com.github.esiqveland.awssigner.aws.JCloudTools.hash;
-import static com.github.esiqveland.awssigner.aws.Utils.not;
+import static com.github.esiqveland.okhttp3.utils.JCloudTools.hash;
 import static com.google.common.io.BaseEncoding.base16;
 import static java.util.stream.Collectors.joining;
 

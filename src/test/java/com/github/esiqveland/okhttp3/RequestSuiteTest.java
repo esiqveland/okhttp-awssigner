@@ -1,7 +1,7 @@
-package com.github.esiqveland.awssigner;
+package com.github.esiqveland.okhttp3;
 
-import com.github.esiqveland.awssigner.aws.Tools;
-import com.github.esiqveland.awssigner.aws.Utils;
+import com.github.esiqveland.okhttp3.utils.Tools;
+import com.github.esiqveland.okhttp3.utils.Utils;
 import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
