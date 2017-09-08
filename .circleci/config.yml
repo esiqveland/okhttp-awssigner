@@ -38,11 +38,6 @@ jobs:
             - ~/.m2
           key: v1-dependencies-{{ checksum "pom.xml" }}
 
-      - run:
-          name: 'test token'
-          command: |
-            echo "token: $COVERALLS_REPO_TOKEN"
-
       - run: mvn clean test jacoco:report coveralls:report -DrepoToken=$COVERALLS_REPO_TOKEN
 
       - run:
