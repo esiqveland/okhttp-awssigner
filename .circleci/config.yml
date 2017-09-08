@@ -36,9 +36,10 @@ jobs:
           paths:
             - ~/.m2
           key: v1-dependencies-{{ checksum "pom.xml" }}
-        
+
+  test:
       # run tests!
-      - run: mvn test
+      - run: mvn clean test jacoco:report coveralls:report
 
       - run:
           name: Save test results
@@ -50,5 +51,3 @@ jobs:
           path: ~/junit
       - store_artifacts:
           path: ~/junit
-
-
