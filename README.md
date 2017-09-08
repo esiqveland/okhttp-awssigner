@@ -26,7 +26,7 @@ before signing is invoked.
 <dependency>
     <groupId>com.github.esiqveland.awssigner</groupId>
     <artifactId>okhttp-awssigner-interceptor</artifactId>
-    <version>0.1</version>
+    <version>0.9.0</version>
 </dependency>
 ```
 
