@@ -24,7 +24,6 @@ import okhttp3.HttpUrl;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-import java.nio.charset.Charset;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.time.ZoneId;
@@ -106,7 +105,6 @@ public class Tools {
         if (querySize == 0) {
             return "";
         }
-
         return url.queryParameterNames().stream()
                 .flatMap(key -> url.queryParameterValues(key).stream()
                         .map(value -> Tuple.of(
