@@ -51,6 +51,7 @@ class UtilsTest {
 
     @Test
     void lowerCase() {
+        assertThat(Utils.lowerCase(null)).isEqualTo(null);
         assertThat(Utils.lowerCase("ABC")).isEqualTo("abc");
         assertThat(Utils.lowerCase("Host")).isEqualTo("host");
         assertThat(Utils.lowerCase("HostParam")).isEqualTo("hostparam");
