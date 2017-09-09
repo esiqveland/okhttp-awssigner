@@ -63,7 +63,7 @@ OkHttpClient client = new OkHttpClient.Builder()
     - [X] support duplicate header keys: `get-header-key-duplicate`
     - [X] support canonical header value trim: `get-header-value-trim`
     - [ ] multiline-header value: `get-header-value-multiline`
-    - [ ] url with spaces: `get-space`
+    - [X] url with spaces: `get-space`
  - [ ] provide some form of debug logging?
 
 ## Credits

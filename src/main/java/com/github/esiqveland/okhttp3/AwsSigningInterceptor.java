@@ -169,6 +169,7 @@ public class AwsSigningInterceptor implements Interceptor {
         String canonicalRequest = request.method() + '\n' +
                 canonicalPath + '\n' +
                 canonicalQueryString + '\n' +
+                // TODO: add a test that easily show errors in this newline madness
                 canonicalHeaders + '\n' + '\n' +
                 signedHead + '\n' +
                 bodyHash;
