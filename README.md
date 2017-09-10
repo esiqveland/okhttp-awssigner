@@ -62,9 +62,10 @@ OkHttpClient client = new OkHttpClient.Builder()
  - [X] add more tests from the examples of signing requests
     - [X] support duplicate header keys: `get-header-key-duplicate`
     - [X] support canonical header value trim: `get-header-value-trim`
-    - [\] multiline-header value: `get-header-value-multiline`
     - [X] url with spaces: `get-space`
     - [X] urls with redundant path: `get-slash`
+    - [ ] multiline-header value: `get-header-value-multiline`
+      - not supported by OkHttp, see test `testMultiLineHeader`
  - [ ] support temporary credentials from AWS Security Token Service? See folder `post-sts-token` for testdata.
  - [ ] provide some form of debug logging?
 
