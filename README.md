@@ -6,9 +6,9 @@
   
 ## What is it?
 
-An interceptor for the nice OkHttpClient from Square to sign requests for use with AWS services that require signatures on requests.
+An interceptor for OkHttpClient from Square to sign requests for AWS services that require signatures.
 
-This project aims to follow the v4 signature spec described here: https://docs.aws.amazon.com/general/latest/gr/signature-version-4.html
+This project aims to follow the AWSv4 signature spec described here: https://docs.aws.amazon.com/general/latest/gr/signature-version-4.html
 
 
 ## Motivation
