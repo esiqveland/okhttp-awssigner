@@ -70,8 +70,6 @@ public class RequestSuiteTest {
     private final ImmutableList<String> normalTests = ImmutableList.of(
             "get-vanilla-query-order-key",
             "get-header-key-duplicate",
-            // TODO: this test does not parse
-            //"get-header-value-multiline",
             "get-header-value-order",
             "get-header-value-trim",
             "get-unreserved",
@@ -94,15 +92,33 @@ public class RequestSuiteTest {
 
     // tests around normalization of relative paths
     private final ImmutableList<String> normalizeTests = ImmutableList.of(
-            //TODO: make this work correctly
-            //"get-slash",
-            //"get-slashes",
+            "get-slash",
+            "get-slashes",
             "get-space",
             "get-relative",
             "get-slash-dot-slash",
             "get-relative-relative",
             "get-slash-pointless-dot"
     );
+
+    @Test
+    @Ignore("Newline in header value is forbidden by OkHttp")
+    public void testMultiLineHeader() throws IOException {
+        String expectedAuthorization = "AWS4-HMAC-SHA256 Credential=AKIDEXAMPLE/20150830/us-east-1/service/aws4_request, SignedHeaders=host;my-header1;x-amz-date, Signature=ba17b383a53190154eb5fa66a1b836cc297cc0a3d70a5d00705980573d8ff790";
+
+        Request req = new Request.Builder()
+                .get()
+                .url("http://example.amazonaws.com/")
+                .header("Host", "example.amazonaws.com")
+                .header("X-Amz-Date", "20150830T123600Z")
+                .header("My-Header1", "value1\n" +
+                        "  value2\n" +
+                        "     value3"
+                )
+                .build();
+
+        runTestExpectingHeader(req, expectedAuthorization);
+    }
 
     @TestFactory
     public Stream<DynamicTest> testRequestURLNormalization() {
@@ -123,7 +139,10 @@ public class RequestSuiteTest {
         String requestFile = String.format("/testdata/aws-sigv4/%s/%s/%s.req", folder, dataset, dataset);
         Request req = parseRequest(readResource(requestFile)).build();
 
+        runTestExpectingHeader(req, expected);
+    }
 
+    private void runTestExpectingHeader(Request req, String expectAuthHeader) throws IOException {
         String accessKey = "AKIDEXAMPLE";
         String secretKey = "wJalrXUtnFEMI/K7MDENG+bPxRfiCYEXAMPLEKEY";
         String regionName = "us-east-1";
@@ -152,7 +171,7 @@ public class RequestSuiteTest {
 
         String awsHeader = interceptor.makeAWSAuthorizationHeader(aDate, req, signatureKey);
 
-        assertThat(awsHeader).isEqualTo(expected);
+        assertThat(awsHeader).isEqualTo(expectAuthHeader);
     }
 
     @Test

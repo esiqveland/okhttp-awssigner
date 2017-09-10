@@ -32,6 +32,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import static com.google.common.io.BaseEncoding.base16;
 import static java.util.stream.Collectors.joining;
@@ -133,6 +134,15 @@ public class Tools {
                         (header, values) -> String.format("%s:%s", header, values)
                 ))
                 .collect(joining("\n"));
+    }
+
+    private static Pattern REDUNDANT_PATHS = Pattern.compile("\\/+");
+
+    public static String getCanonicalPath(HttpUrl url) {
+        return REDUNDANT_PATHS.matcher(Utils.defaultIfBlank(
+                url.encodedPath(),
+                "/"
+        )).replaceAll("/");
     }
 
 }

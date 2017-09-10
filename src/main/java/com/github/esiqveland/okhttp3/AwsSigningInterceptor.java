@@ -18,7 +18,6 @@ package com.github.esiqveland.okhttp3;
 
 import com.github.esiqveland.okhttp3.utils.JCloudTools;
 import com.github.esiqveland.okhttp3.utils.Tools;
-import com.github.esiqveland.okhttp3.utils.Utils;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
@@ -41,7 +40,6 @@ import java.util.function.Supplier;
 
 import static com.github.esiqveland.okhttp3.utils.JCloudTools.hash;
 import static com.google.common.io.BaseEncoding.base16;
-import static java.util.stream.Collectors.joining;
 
 public class AwsSigningInterceptor implements Interceptor {
     private static final String AMZ_ALGORITHM_HMAC_SHA256 = "AWS4-HMAC-SHA256";
@@ -130,6 +128,7 @@ public class AwsSigningInterceptor implements Interceptor {
         }
     }
 
+
     private CanonicalRequest makeCanonicalRequest(ZonedDateTime timestamp, Request request) throws IOException {
         RequestBody body = request.body();
         String bodyHash = JCloudTools.getEmptyPayloadContentHash();
@@ -140,10 +139,7 @@ public class AwsSigningInterceptor implements Interceptor {
         }
 
         HttpUrl url = request.url();
-        String canonicalPath = Utils.defaultIfBlank(
-                url.encodedPath(),
-                "/"
-        );
+        String canonicalPath = Tools.getCanonicalPath(url);
 
         Map<String, List<String>> signedHeaders = request.headers().toMultimap();
 
