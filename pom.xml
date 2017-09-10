@@ -7,7 +7,7 @@
     <artifactId>aws-interceptor</artifactId>
     <packaging>jar</packaging>
 
-    <version>0.9.2-SNAPSHOT</version>
+    <version>0.9.2</version>
 
     <name>${project.groupId}:${project.artifactId}</name>
     <description>OkHttp AWSv4 signing interceptor</description>
