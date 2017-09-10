@@ -26,7 +26,7 @@ before signing is invoked.
 <dependency>
     <groupId>com.github.esiqveland.okhttp3</groupId>
     <artifactId>aws-interceptor</artifactId>
-    <version>0.9.0</version>
+    <version>0.9.2</version>
 </dependency>
 ```
 
@@ -62,8 +62,10 @@ OkHttpClient client = new OkHttpClient.Builder()
  - [X] add more tests from the examples of signing requests
     - [X] support duplicate header keys: `get-header-key-duplicate`
     - [X] support canonical header value trim: `get-header-value-trim`
-    - [ ] multiline-header value: `get-header-value-multiline`
+    - [\] multiline-header value: `get-header-value-multiline`
     - [X] url with spaces: `get-space`
+    - [X] urls with redundant path: `get-slash`
+ - [ ] support temporary credentials from AWS Security Token Service? See folder `post-sts-token` for testdata.
  - [ ] provide some form of debug logging?
 
 ## Credits
