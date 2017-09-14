@@ -60,6 +60,27 @@ public class AwsSigningInterceptor implements Interceptor {
         this(cfg, ZonedDateTime::now);
     }
 
+
+    @Override
+    public Response intercept(Chain chain) throws IOException {
+        Request request = chain.request();
+        ZonedDateTime timestamp = clock.get();
+
+        byte[] signatureKey = Tools.getSignatureKey(cfg.awsSecretKey, timestamp, cfg.awsRegion, cfg.awsServiceName);
+
+        String awsAuthorizationHeader = makeAWSAuthorizationHeader(timestamp, request, signatureKey);
+
+        String amzTimestamp = timestampFormat.format(timestamp);
+
+        Request signedRequest = request.newBuilder()
+                .removeHeader(AUTHORIZATION_HEADER)
+                .addHeader(AUTHORIZATION_HEADER, awsAuthorizationHeader)
+                .addHeader("X-Amz-Date", amzTimestamp)
+                .build();
+
+        return chain.proceed(signedRequest);
+    }
+
     @VisibleForTesting
     String makeAWSAuthorizationHeader(ZonedDateTime timestamp, Request request, byte[] signatureKey) throws IOException {
         String datestamp = dateFormat.format(timestamp);
@@ -151,26 +172,6 @@ public class AwsSigningInterceptor implements Interceptor {
                 bodyHash;
 
         return new CanonicalRequest(canonicalRequest, headersToSign);
-    }
-
-    @Override
-    public Response intercept(Chain chain) throws IOException {
-        Request request = chain.request();
-        ZonedDateTime timestamp = clock.get();
-
-        byte[] signatureKey = Tools.getSignatureKey(cfg.awsSecretKey, timestamp, cfg.awsRegion, cfg.awsServiceName);
-
-        String awsAuthorizationHeader = makeAWSAuthorizationHeader(timestamp, request, signatureKey);
-
-        String amzTimestamp = timestampFormat.format(timestamp);
-
-        Request signedRequest = request.newBuilder()
-                .removeHeader(AUTHORIZATION_HEADER)
-                .addHeader(AUTHORIZATION_HEADER, awsAuthorizationHeader)
-                .addHeader("X-Amz-Date", amzTimestamp)
-                .build();
-
-        return chain.proceed(signedRequest);
     }
 
     @VisibleForTesting

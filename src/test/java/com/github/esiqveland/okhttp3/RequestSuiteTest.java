@@ -200,12 +200,12 @@ public class RequestSuiteTest {
     private static Request.Builder parseRequest(String reqFile) {
         String[] split = reqFile.split("\n");
 
-        // TODO: this breaks if there is a whitespace in url
         // Example: "POST /new HTTP/1.1"
         String[] spec = split[0].split(" ");
-        String method = spec[0];
         String path = Joiner.on(" ").join(Arrays.copyOfRange(spec, 1, spec.length-1));
-        String httpV = spec[spec.length - 1];
+
+        String method = spec[0];
+        String httpVer = spec[spec.length - 1];
         RequestBody body = "GET".equals(method) ? null : RequestBody.create(null, new byte[0]);
 
         Request.Builder builder = new Request.Builder()
