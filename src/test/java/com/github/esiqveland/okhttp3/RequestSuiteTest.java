@@ -104,6 +104,16 @@ public class RequestSuiteTest {
     @Test
     @Ignore("Newline in header value is forbidden by OkHttp")
     public void testMultiLineHeader() throws IOException {
+        String canonReq = "GET\n" +
+                "/\n" +
+                "\n" +
+                "host:example.amazonaws.com\n" +
+                "my-header1:value1,value2,value3\n" +
+                "x-amz-date:20150830T123600Z\n" +
+                "\n" +
+                "host;my-header1;x-amz-date\n" +
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
+
         String expectedAuthorization = "AWS4-HMAC-SHA256 Credential=AKIDEXAMPLE/20150830/us-east-1/service/aws4_request, SignedHeaders=host;my-header1;x-amz-date, Signature=ba17b383a53190154eb5fa66a1b836cc297cc0a3d70a5d00705980573d8ff790";
 
         Request req = new Request.Builder()
@@ -117,7 +127,7 @@ public class RequestSuiteTest {
                 )
                 .build();
 
-        runTestExpectingHeader(req, expectedAuthorization);
+        runTestExpectingHeader(req, expectedAuthorization, canonReq);
     }
 
     @TestFactory
@@ -134,15 +144,18 @@ public class RequestSuiteTest {
 
     private void runTest(String folder, String dataset) throws IOException {
         String authzFile = String.format("/testdata/aws-sigv4/%s/%s/%s.authz", folder, dataset, dataset);
-        String expected = readResource(authzFile);
+        String expectAuthHeader = readResource(authzFile);
+
+        String canonReqFile = String.format("/testdata/aws-sigv4/%s/%s/%s.creq", folder, dataset, dataset);
+        String canonReq = readResource(canonReqFile);
 
         String requestFile = String.format("/testdata/aws-sigv4/%s/%s/%s.req", folder, dataset, dataset);
         Request req = parseRequest(readResource(requestFile)).build();
 
-        runTestExpectingHeader(req, expected);
+        runTestExpectingHeader(req, expectAuthHeader, canonReq);
     }
 
-    private void runTestExpectingHeader(Request req, String expectAuthHeader) throws IOException {
+    private void runTestExpectingHeader(Request req, String expectAuthHeader, String canonReq) throws IOException {
         String accessKey = "AKIDEXAMPLE";
         String secretKey = "wJalrXUtnFEMI/K7MDENG+bPxRfiCYEXAMPLEKEY";
         String regionName = "us-east-1";
@@ -156,10 +169,7 @@ public class RequestSuiteTest {
         );
 
         Supplier<ZonedDateTime> clock = () -> aDate;
-        AwsSigningInterceptor interceptor = new AwsSigningInterceptor(
-                cfg,
-                clock
-        );
+        AwsSigningInterceptor interceptor = new AwsSigningInterceptor(cfg, clock);
 
         byte[] signatureKey = Tools.getSignatureKey(
                 cfg.awsSecretKey,
@@ -168,6 +178,8 @@ public class RequestSuiteTest {
                 cfg.awsServiceName
         );
 
+        AwsSigningInterceptor.CanonicalRequest canonicalRequest = interceptor.makeCanonicalRequest(aDate, req);
+        assertThat(canonicalRequest.canonicalRequest).isEqualTo(canonReq);
 
         String awsHeader = interceptor.makeAWSAuthorizationHeader(aDate, req, signatureKey);
 
