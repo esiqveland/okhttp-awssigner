@@ -4,6 +4,10 @@ import com.github.esiqveland.okhttp3.utils.Tools;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.mockwebserver.MockResponse;
+import okhttp3.mockwebserver.MockWebServer;
+import okhttp3.mockwebserver.RecordedRequest;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -60,13 +64,21 @@ public class AwsSigningInterceptorTest {
     }
 
     @Test
-    @Ignore
-    // TODO: finish this test
-    public void testWithClient() {
+    public void testWithClient() throws IOException, InterruptedException {
+        MockWebServer server = new MockWebServer();
+        server.start();
+
+        server.enqueue(new MockResponse()
+                .setResponseCode(200)
+                .setBody("{\"success\": true}")
+        );
+
         String accessKey = "AKIDEXAMPLE";
         String secretKey = "wJalrXUtnFEMI/K7MDENG+bPxRfiCYEXAMPLEKEY";
         String regionName = "us-east-1";
         String serviceName = "iam";
+
+        ZonedDateTime aDate = ZonedDateTime.parse("2015-08-30T12:36:00.000Z", DateTimeFormatter.ISO_DATE_TIME);
 
         AwsConfiguration cfg = new AwsConfiguration(
                 accessKey,
@@ -75,12 +87,25 @@ public class AwsSigningInterceptorTest {
                 serviceName
         );
 
-        Interceptor awsInterceptor = new AwsSigningInterceptor(cfg);
+        Interceptor awsInterceptor = new AwsSigningInterceptor(cfg, () -> aDate);
 
         OkHttpClient client = new OkHttpClient.Builder()
                 .addNetworkInterceptor(awsInterceptor)
                 .build();
 
+        Request.Builder req = createExampleRequest()
+                .get()
+                .url(server.url("/home/test"))
+                .addHeader("Content-Type", "application/x-www-form-urlencoded; charset=utf-8")
+                .addHeader("Accept", "application/json");
+
+        Response res = client.newCall(req.build()).execute();
+
+        RecordedRequest recordedRequest = server.takeRequest();
+
+        String expected = "AWS4-HMAC-SHA256 Credential=AKIDEXAMPLE/20150830/us-east-1/iam/aws4_request, SignedHeaders=accept;accept-encoding;connection;content-type;host;user-agent;x-amz-date, Signature=f6cfa68900e9b3d511fc1b2b31d200d610eb246190db6e25c383c7db7df1b826";
+
+        assertThat(recordedRequest.getHeader("Authorization")).isEqualTo(expected);
     }
 
     // See also: http://docs.aws.amazon.com/general/latest/gr/sigv4-create-canonical-request.html
@@ -173,9 +198,9 @@ public class AwsSigningInterceptorTest {
         Supplier<ZonedDateTime> clock = () -> aDate;
         AwsSigningInterceptor interceptor = new AwsSigningInterceptor(cfg, clock);
 
-        String canonicalRequest = interceptor.createCanonicalRequest(aDate, req);
+        AwsSigningInterceptor.CanonicalRequest result = interceptor.makeCanonicalRequest(aDate, req);
 
-        assertThat(canonicalRequest).isEqualTo(expected);
+        assertThat(result.canonicalRequest).isEqualTo(expected);
     }
 
 

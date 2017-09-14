@@ -1,6 +1,12 @@
 package com.github.esiqveland.okhttp3.utils;
 
+import com.google.common.base.Charsets;
+
+import java.io.ByteArrayInputStream;
 import java.util.regex.Pattern;
+
+import static com.github.esiqveland.okhttp3.utils.JCloudTools.hash;
+import static com.google.common.io.BaseEncoding.base16;
 
 public class Utils {
     public static boolean not(boolean value) {
@@ -33,6 +39,7 @@ public class Utils {
     /**
      * removeContiguousBlanks replaces contiguous regions of whitespace with a single space.
      * Example: "a    b     c " → "a b c "
+     *
      * @param str the string to strip
      * @return str with spaces strip
      */
@@ -49,6 +56,11 @@ public class Utils {
             return null;
         }
         return str.toLowerCase();
+    }
+
+    public static String hexHash(String data) {
+        byte[] bytes = data.getBytes(Charsets.UTF_8);
+        return base16().lowerCase().encode(hash(new ByteArrayInputStream(bytes)));
     }
 
 }

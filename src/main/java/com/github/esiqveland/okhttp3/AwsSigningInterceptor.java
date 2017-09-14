@@ -18,8 +18,8 @@ package com.github.esiqveland.okhttp3;
 
 import com.github.esiqveland.okhttp3.utils.JCloudTools;
 import com.github.esiqveland.okhttp3.utils.Tools;
+import com.github.esiqveland.okhttp3.utils.Utils;
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import okhttp3.HttpUrl;
@@ -29,7 +29,6 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 import okio.Buffer;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -37,9 +36,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
-
-import static com.github.esiqveland.okhttp3.utils.JCloudTools.hash;
-import static com.google.common.io.BaseEncoding.base16;
 
 public class AwsSigningInterceptor implements Interceptor {
     private static final String AMZ_ALGORITHM_HMAC_SHA256 = "AWS4-HMAC-SHA256";
@@ -65,32 +61,8 @@ public class AwsSigningInterceptor implements Interceptor {
     }
 
     @VisibleForTesting
-    String createCanonicalRequestHash(ZonedDateTime timestamp, Request request) throws IOException {
-        String canonicalRequest = createCanonicalRequest(timestamp, request);
-        return hexHash(canonicalRequest);
-    }
-
-    // createCanonicalRequest creates a string representing a request for the purpose of signing it as a AWS
-    // signed request.
-    // See also: http://docs.aws.amazon.com/general/latest/gr/sigv4-create-canonical-request.html
-    @VisibleForTesting
-    String createCanonicalRequest(ZonedDateTime timestamp, Request request) throws IOException {
-        return makeCanonicalRequest(timestamp, request).canonicalRequest;
-    }
-
-    @VisibleForTesting
     String makeAWSAuthorizationHeader(ZonedDateTime timestamp, Request request, byte[] signatureKey) throws IOException {
         String datestamp = dateFormat.format(timestamp);
-
-        CanonicalRequest canonicalRequest = makeCanonicalRequest(
-                timestamp,
-                request
-        );
-
-        Map<String, List<String>> signedHeaders = canonicalRequest.signedHeaders;
-        String requestHash = hexHash(canonicalRequest.canonicalRequest);
-        String stringToSign = createStringToSign(timestamp, requestHash);
-        String signature = Tools.createSignature(signatureKey, stringToSign);
 
         String credentials = Joiner.on('/').join(
                 cfg.awsAccessKey,
@@ -99,6 +71,17 @@ public class AwsSigningInterceptor implements Interceptor {
                 cfg.awsServiceName,
                 "aws4_request"
         );
+
+        CanonicalRequest canonicalRequest = makeCanonicalRequest(
+                timestamp,
+                request
+        );
+
+        Map<String, List<String>> signedHeaders = canonicalRequest.signedHeaders;
+        String requestHash = Utils.hexHash(canonicalRequest.canonicalRequest);
+        String stringToSign = createStringToSign(timestamp, requestHash);
+        String signature = Tools.createSignature(signatureKey, stringToSign);
+
         String signedHeadersStr = Joiner.on(";").join(signedHeaders.keySet());
 
         StringBuilder authorization = new StringBuilder(AMZ_ALGORITHM_HMAC_SHA256).append(" ")
@@ -111,13 +94,7 @@ public class AwsSigningInterceptor implements Interceptor {
         return authorization.toString();
     }
 
-    private String hexHash(String data) {
-        byte[] bytes = data.getBytes(Charsets.UTF_8);
-        return base16().lowerCase().encode(hash(new ByteArrayInputStream(bytes)));
-    }
-
-
-    private static class CanonicalRequest {
+    static class CanonicalRequest {
         final String canonicalRequest;
         // signedHeaders includes a copy of the headers we chose to include for the signature
         final Map<String, List<String>> signedHeaders;
@@ -129,7 +106,11 @@ public class AwsSigningInterceptor implements Interceptor {
     }
 
 
-    private CanonicalRequest makeCanonicalRequest(ZonedDateTime timestamp, Request request) throws IOException {
+    // makeCanonicalRequest creates a string representing a request for the purpose of signing it as a AWS
+    // signed request.
+    // See also: http://docs.aws.amazon.com/general/latest/gr/sigv4-create-canonical-request.html
+    @VisibleForTesting
+    CanonicalRequest makeCanonicalRequest(ZonedDateTime timestamp, Request request) throws IOException {
         RequestBody body = request.body();
         String bodyHash = JCloudTools.getEmptyPayloadContentHash();
         if (body != null) {
@@ -141,18 +122,18 @@ public class AwsSigningInterceptor implements Interceptor {
         HttpUrl url = request.url();
         String canonicalPath = Tools.getCanonicalPath(url);
 
-        Map<String, List<String>> signedHeaders = request.headers().toMultimap();
+        Map<String, List<String>> headersToSign = request.headers().toMultimap();
 
         // replace x-amz-date with one we know is same as the timestamp we have signed in the signature
         String amzTimestamp = timestampFormat.format(timestamp);
-        signedHeaders.remove("x-amz-date");
-        signedHeaders.put("x-amz-date", Lists.newArrayList(amzTimestamp));
+        headersToSign.remove("x-amz-date");
+        headersToSign.put("x-amz-date", Lists.newArrayList(amzTimestamp));
 
-        String canonicalHeaders = Tools.createCanonicalHeaderString(signedHeaders);
+        String canonicalHeaders = Tools.createCanonicalHeaderString(headersToSign);
 
         String canonicalQueryString = Tools.createCanonicalQueryString(request.url());
 
-        String signedHead = Joiner.on(";").join(signedHeaders.keySet().iterator());
+        String signedHead = Joiner.on(";").join(headersToSign.keySet());
 
         // CanonicalRequest =
         //        HTTPRequestMethod + '\n' +
@@ -170,7 +151,7 @@ public class AwsSigningInterceptor implements Interceptor {
                 signedHead + '\n' +
                 bodyHash;
 
-        return new CanonicalRequest(canonicalRequest, signedHeaders);
+        return new CanonicalRequest(canonicalRequest, headersToSign);
     }
 
     @Override
