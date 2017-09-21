@@ -7,7 +7,7 @@ jobs:
   build-jdk8:
     docker:
       # specify the version you desire here
-      - image: circleci/openjdk:8-jdk
+      - image: circleci/openjdk:8-jdk-slim
       
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
@@ -55,7 +55,7 @@ jobs:
   build-jdk9:
     docker:
       # specify the version you desire here
-      - image: maven:3.5-jdk-9
+      - image: maven:3.5-jdk-9-slim
 
     working_directory: ~/repo
     
