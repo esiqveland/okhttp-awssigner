@@ -7,7 +7,7 @@ jobs:
   build-jdk8:
     docker:
       # specify the version you desire here
-      - image: circleci/openjdk:8-jdk-slim
+      - image: maven:3.5-jdk-8-slim
       
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
