@@ -19,7 +19,6 @@ package com.github.esiqveland.okhttp3.utils;
 import com.google.common.base.Charsets;
 import com.google.common.escape.Escaper;
 import com.google.common.net.PercentEscaper;
-import io.vavr.Tuple;
 import okhttp3.HttpUrl;
 
 import javax.crypto.Mac;
