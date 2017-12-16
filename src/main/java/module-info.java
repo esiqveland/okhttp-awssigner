@@ -5,6 +5,5 @@ module com.github.esiqveland.okhttp3
     requires guava;
     requires okhttp;
     requires okio;
-    requires vavr;
 
 }
