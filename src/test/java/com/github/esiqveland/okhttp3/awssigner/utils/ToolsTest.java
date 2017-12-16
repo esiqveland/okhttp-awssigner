@@ -1,6 +1,6 @@
-package com.github.esiqveland.okhttp3.utils;
+package com.github.esiqveland.okhttp3.awssigner.utils;
 
-import com.github.esiqveland.okhttp3.AwsConfiguration;
+import com.github.esiqveland.okhttp3.awssigner.AwsConfiguration;
 import org.junit.Before;
 import org.junit.Test;
 

@@ -1,4 +1,4 @@
-package com.github.esiqveland.okhttp3.utils;
+package com.github.esiqveland.okhttp3.awssigner.utils;
 
 import java.util.function.BiFunction;
 import java.util.function.Function;

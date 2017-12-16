@@ -19,7 +19,7 @@
  * Parts taken from jclouds project.
  * All code and comments in functions have been kept intact as well as notice.
  */
-package com.github.esiqveland.okhttp3.utils;
+package com.github.esiqveland.okhttp3.awssigner.utils;
 
 import com.google.common.hash.Hashing;
 import com.google.common.hash.HashingInputStream;

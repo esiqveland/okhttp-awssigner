@@ -1,9 +1,11 @@
-module com.github.esiqveland.okhttp3
+module com.github.esiqveland.okhttp3.awssigner
 {
-    exports com.github.esiqveland.okhttp3;
-
-    requires guava;
+    // wait for versions with Automatic-Module-Name set in MANIFEST.MF
+    // See: http://blog.joda.org/2017/05/java-se-9-jpms-automatic-modules.html
     requires okhttp;
     requires okio;
 
+    requires com.google.common;
+
+    exports com.github.esiqveland.okhttp3.awssigner;
 }

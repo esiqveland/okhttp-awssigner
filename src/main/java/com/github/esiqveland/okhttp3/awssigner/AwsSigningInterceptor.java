@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package com.github.esiqveland.okhttp3;
+package com.github.esiqveland.okhttp3.awssigner;
 
-import com.github.esiqveland.okhttp3.utils.JCloudTools;
-import com.github.esiqveland.okhttp3.utils.Tools;
-import com.github.esiqveland.okhttp3.utils.Utils;
+import com.github.esiqveland.okhttp3.awssigner.utils.JCloudTools;
+import com.github.esiqveland.okhttp3.awssigner.utils.Tools;
+import com.github.esiqveland.okhttp3.awssigner.utils.Utils;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;

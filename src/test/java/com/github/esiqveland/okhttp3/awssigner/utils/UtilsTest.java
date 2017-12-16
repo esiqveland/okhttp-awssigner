@@ -1,8 +1,8 @@
-package com.github.esiqveland.okhttp3.utils;
+package com.github.esiqveland.okhttp3.awssigner.utils;
 
 import org.junit.jupiter.api.Test;
 
-import static com.github.esiqveland.okhttp3.utils.Utils.not;
+import static com.github.esiqveland.okhttp3.awssigner.utils.Utils.not;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class UtilsTest {

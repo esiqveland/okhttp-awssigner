@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.esiqveland.okhttp3.utils;
+package com.github.esiqveland.okhttp3.awssigner.utils;
 
 import com.google.common.base.Charsets;
 import com.google.common.escape.Escaper;

@@ -1,6 +1,6 @@
-package com.github.esiqveland.okhttp3;
+package com.github.esiqveland.okhttp3.awssigner;
 
-import com.github.esiqveland.okhttp3.utils.Tools;
+import com.github.esiqveland.okhttp3.awssigner.utils.Tools;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -9,7 +9,6 @@ import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
