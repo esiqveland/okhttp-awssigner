@@ -39,7 +39,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <okhttp.version>3.8.1</okhttp.version>
+        <okhttp.version>3.9.1</okhttp.version>
         <slf4j.version>1.7.25</slf4j.version>
 
         <junit.jupiter.version>5.0.0-RC3</junit.jupiter.version>
