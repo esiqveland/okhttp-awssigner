@@ -39,7 +39,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <okhttp.version>3.8.1</okhttp.version>
+        <okhttp.version>3.9.1</okhttp.version>
         <slf4j.version>1.7.25</slf4j.version>
 
         <junit.jupiter.version>5.0.0-RC3</junit.jupiter.version>
@@ -65,7 +65,7 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>22.0</version>
+            <version>23.5-jre</version>
             <exclusions>
                 <exclusion>
                     <artifactId>jsr305</artifactId>
@@ -157,24 +157,63 @@
                     <autoReleaseAfterClose>true</autoReleaseAfterClose>
                 </configuration>
             </plugin>
-
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.7.0</version>
+                <executions>
+                    <execution>
+                        <id>default-compile</id>
+                        <configuration>
+                            <!-- compile everything to ensure module-info contains right entries -->
+                            <release>9</release>
+                            <encoding>UTF-8</encoding>
+                            <compilerArgs>
+                                <arg>-Xlint:unchecked</arg>
+                                <arg>-Xlint:deprecation</arg>
+                            </compilerArgs>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>base-compile</id>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                        <!-- recompile everything for target VM except the module-info.java -->
+                        <configuration>
+                            <excludes>
+                                <exclude>module-info.java</exclude>
+                            </excludes>
+                        </configuration>
+                    </execution>
+                </executions>
+                <!-- defaults for compile and testCompile -->
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <!-- Only required when JAVA_HOME isn't at least Java 9 and when haven't configured the maven-toolchains-plugin -->
+                    <jdkToolchain>
+                        <version>9</version>
+                    </jdkToolchain>
+                    <release>8</release>
                     <encoding>UTF-8</encoding>
                     <compilerArgs>
                         <arg>-Xlint:unchecked</arg>
                         <arg>-Xlint:deprecation</arg>
                     </compilerArgs>
+                    <source>9</source>
+                    <target>9</target>
                 </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>3.0.2</version>
+                <configuration>
+                    <archive>
+                    <manifestEntries>
+                        <Automatic-Module-Name>com.github.esiqveland.okhttp3.awssigner</Automatic-Module-Name>
+                    </manifestEntries>
+                    </archive>
+                </configuration>
             </plugin>
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>

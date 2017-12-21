@@ -1,6 +1,6 @@
-package com.github.esiqveland.okhttp3;
+package com.github.esiqveland.okhttp3.awssigner;
 
-import com.github.esiqveland.okhttp3.utils.Tools;
+import com.github.esiqveland.okhttp3.awssigner.utils.Tools;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -9,7 +9,6 @@ import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
@@ -96,14 +95,15 @@ public class AwsSigningInterceptorTest {
         Request.Builder req = createExampleRequest()
                 .get()
                 .url(server.url("/home/test"))
-                .addHeader("Content-Type", "application/x-www-form-urlencoded; charset=utf-8")
-                .addHeader("Accept", "application/json");
+                .header("Content-Type", "application/x-www-form-urlencoded; charset=utf-8")
+                .header("User-Agent", "okhttp-client")
+                .header("Accept", "application/json");
 
         Response res = client.newCall(req.build()).execute();
 
         RecordedRequest recordedRequest = server.takeRequest();
 
-        String expected = "AWS4-HMAC-SHA256 Credential=AKIDEXAMPLE/20150830/us-east-1/iam/aws4_request, SignedHeaders=accept;accept-encoding;connection;content-type;host;user-agent;x-amz-date, Signature=f6cfa68900e9b3d511fc1b2b31d200d610eb246190db6e25c383c7db7df1b826";
+        String expected = "AWS4-HMAC-SHA256 Credential=AKIDEXAMPLE/20150830/us-east-1/iam/aws4_request, SignedHeaders=accept;accept-encoding;connection;content-type;host;user-agent;x-amz-date, Signature=12b929341232610f62ac811d95aa16f0b84d797382f609149068e4c065b7a01e";
 
         assertThat(recordedRequest.getHeader("Authorization")).isEqualTo(expected);
     }

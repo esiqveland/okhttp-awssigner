@@ -1,7 +1,7 @@
-package com.github.esiqveland.okhttp3;
+package com.github.esiqveland.okhttp3.awssigner;
 
-import com.github.esiqveland.okhttp3.utils.Tools;
-import com.github.esiqveland.okhttp3.utils.Utils;
+import com.github.esiqveland.okhttp3.awssigner.utils.Tools;
+import com.github.esiqveland.okhttp3.awssigner.utils.Utils;
 import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
@@ -237,7 +237,7 @@ public class RequestSuiteTest {
     }
 
     private static String readResource(String filename) {
-        InputStream stream = AwsSigningInterceptorTest.class.getResourceAsStream(filename);
+        InputStream stream = com.github.esiqveland.okhttp3.awssigner.AwsSigningInterceptorTest.class.getResourceAsStream(filename);
         try {
             return new Buffer().readFrom(stream).readUtf8();
         } catch (IOException e) {
